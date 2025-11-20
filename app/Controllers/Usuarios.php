@@ -1,0 +1,263 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\UsuarioModel;
+use CodeIgniter\RESTful\ResourceController;
+
+class Usuarios extends ResourceController
+{
+    protected $format = 'json';
+
+    // =========================================
+    // LISTAR TODOS LOS USUARIOS (CON JOINS)
+    // =========================================
+    public function index()
+    {
+        try {
+            $model = new UsuarioModel();
+            $data = $model->getUsuariosConJoin();
+
+            return $this->respond([
+                'status' => true,
+                'dataset' => $data
+            ]);
+
+        } catch (\Throwable $th) {
+            return $this->respond([
+                'status' => false,
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    // =========================================
+    // LEER UN USUARIO POR ID
+    // =========================================
+    public function readOne()
+    {
+        try {
+            $id = $this->request->getPost('id_usuario');
+
+            if (!$id) {
+                return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
+            }
+
+            $model = new UsuarioModel();
+            $data = $model->find($id);
+
+            if (!$data) {
+                return $this->respond(['status' => false, 'message' => 'Usuario no encontrado'], 404);
+            }
+
+            return $this->respond(['status' => true, 'dataset' => $data]);
+
+        } catch (\Throwable $th) {
+            return $this->respond(['status' => false, 'exception' => $th->getMessage()], 500);
+        }
+    }
+
+    // =========================================
+    // CREAR USUARIO
+    // =========================================
+      // =========================================
+    // CREAR USUARIO
+    // =========================================
+    public function create()
+    {
+        try {
+            $validation = \Config\Services::validation();
+
+            $rules = [
+                'nombres_usuario'    => 'required',
+                'apellidos_usuario'  => 'required',
+                'correo_usuario'     => 'required|valid_email',
+                'alias_usuario'      => 'required',
+                'clave_usuario'      => 'required',
+                'id_tipo'    => 'required|integer',
+            ];
+
+            if (!$validation->setRules($rules)->withRequest($this->request)->run()) {
+                return $this->respond(['status' => false, 'errors' => $validation->getErrors()]);
+            }
+
+            $model = new UsuarioModel();
+
+            $data = [
+                'name'   => $this->request->getPost('nombres_usuario'),
+                'last_name' => $this->request->getPost('apellidos_usuario'),
+                'email'    => $this->request->getPost('correo_usuario'),
+                'username'     => $this->request->getPost('alias_usuario'),
+                'password_hash'     => password_hash($this->request->getPost('clave_usuario'), PASSWORD_DEFAULT),
+                'role_id'   => $this->request->getPost('id_tipo'),
+            ];
+
+            $model->insert($data);
+
+            return $this->respond([
+                'status' => true,
+                'message' => 'Usuario creado correctamente'
+            ]);
+
+        } catch (\Throwable $th) {
+            return $this->respond([
+                'status' => false,
+                'exception' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    // =========================================
+    // ACTUALIZAR USUARIO
+    // =========================================
+    public function update($id = null)
+    {
+        try {
+            $id = $this->request->getPost('id_usuario');
+
+            if (!$id) {
+                return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
+            }
+
+            $model = new UsuarioModel();
+
+            $data = [
+                'name'   => $this->request->getPost('nombres_usuario'),
+                'last_name' => $this->request->getPost('apellidos_usuario'),
+                'email'    => $this->request->getPost('correo_usuario'),
+                'username'     => $this->request->getPost('alias_usuario'),
+                'role_id'           => $this->request->getPost('id_tipo')
+
+            ];
+
+            // Si viene la clave, actualizarla
+            if ($this->request->getPost('clave_usuario')) {
+                $data['password_hash'] = password_hash(
+                    $this->request->getPost('clave_usuario'),
+                    PASSWORD_DEFAULT
+                );
+            }
+
+            $model->update($id, $data);
+
+            return $this->respond([
+                'status' => true,
+                'message' => 'Usuario actualizado correctamente'
+            ]);
+
+        } catch (\Throwable $th) {
+            return $this->respond(['status' => false, 'exception' => $th->getMessage()], 500);
+        }
+    }
+
+    // =========================================
+    // ELIMINAR USUARIO
+    // =========================================
+    public function delete($id = null)
+    {
+        try {
+            $id = $this->request->getPost('id_usuario');
+
+            if (!$id) {
+                return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
+            }
+
+            $model = new UsuarioModel();
+            $model->delete($id);
+
+            return $this->respond([
+                'status' => true,
+                'message' => 'Usuario eliminado correctamente'
+            ]);
+
+        } catch (\Throwable $th) {
+            return $this->respond([
+                'status' => false,
+                'exception' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    // =========================================
+    // BÚSQUEDA DE USUARIOS
+    // =========================================
+    public function search() 
+{
+    try {
+        //$search = $this->request->getPost('search') ?? $this->request->getGet('search');
+
+        $search = $this->request->getPost('search');
+
+        if (!$search) {
+            return $this->respond([
+                'status' => false,
+                'message' => 'Debe ingresar un término de búsqueda'
+            ]);
+        }
+
+        $model = new UsuarioModel();
+
+        // Hacemos JOIN con tipos y estados para obtener los nombres
+        $data = $model
+            ->select('users.*, roles.name as tipo')
+            ->join('roles', 'roles.id = users.role_id')
+            ->groupStart()
+                ->like('users.name', $search)
+                ->orLike('users.last_name', $search)
+                ->orLike('users.username', $search)
+            ->groupEnd()
+            ->findAll();
+
+        return $this->respond([
+            'status' => true,
+            'dataset' => $data
+        ]);
+
+    } catch (\Throwable $th) {
+        return $this->respond(['status' => false, 'exception' => $th->getMessage()], 500);
+    }
+}
+
+
+    public function getTipo()
+{
+    try {
+        $db = \Config\Database::connect();
+        $query = $db->table('roles')->select('id AS id, name AS nombre')->get()->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'dataset' => $query
+        ]);
+
+    } catch (\Throwable $th) {
+        return $this->respond([
+            'status' => false,
+            'exception' => $th->getMessage()
+        ]);
+    }
+}
+
+public function getEstado()
+{
+    try {
+        $db = \Config\Database::connect();
+        $query = $db->table('estados_usuarios')->select('id_estado AS id, nombre_estado AS nombre')->get()->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'dataset' => $query
+        ]);
+
+    } catch (\Throwable $th) {
+        return $this->respond([
+            'status' => false,
+            'exception' => $th->getMessage()
+        ]);
+    }
+}
+
+
+}
+
+
