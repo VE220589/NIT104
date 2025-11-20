@@ -15,8 +15,9 @@ class Usuarios extends ResourceController
     public function index()
     {
         try {
+            $idUsuario = session()->get('id_usuario');
             $model = new UsuarioModel();
-            $data = $model->getUsuariosConJoin();
+            $data = $model->getUsuariosConJoin($idUsuario);
 
             return $this->respond([
                 'status' => true,
@@ -68,18 +69,22 @@ class Usuarios extends ResourceController
         try {
             $validation = \Config\Services::validation();
 
-            $rules = [
-                'nombres_usuario'    => 'required',
-                'apellidos_usuario'  => 'required',
-                'correo_usuario'     => 'required|valid_email',
-                'alias_usuario'      => 'required',
-                'clave_usuario'      => 'required',
-                'id_tipo'    => 'required|integer',
-            ];
+        $rules = [
+            'nombres_usuario'    => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]', //permite el uso tildes 
+            'apellidos_usuario'  => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]',
+            'correo_usuario'     => 'required|valid_email|max_length[100]',
+            'alias_usuario'      => 'required|alpha_numeric|min_length[3]|max_length[20]',
+            'clave_usuario'      => 'required|min_length[8]',
+            'confirmar_clave'    => 'required|matches[clave_usuario]',
+            'id_tipo'            => 'required|integer'
+        ];
 
-            if (!$validation->setRules($rules)->withRequest($this->request)->run()) {
-                return $this->respond(['status' => false, 'errors' => $validation->getErrors()]);
-            }
+        if (!$validation->setRules($rules)->withRequest($this->request)->run()) {
+            return $this->respond([
+                'status' => false, 
+                'errors' => $validation->getErrors()
+            ]);
+        }
 
             $model = new UsuarioModel();
 
@@ -119,6 +124,22 @@ class Usuarios extends ResourceController
                 return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
             }
 
+            $validation = \Config\Services::validation();
+
+            $rules = [
+                'nombres_usuario'    => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]',
+                'apellidos_usuario'  => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]',
+                'correo_usuario'     => 'required|valid_email|max_length[100]',
+                'id_tipo'            => 'required|integer'
+            ];
+
+            if (!$validation->setRules($rules)->withRequest($this->request)->run()) {
+                return $this->respond([
+                    'status' => false, 
+                    'errors' => $validation->getErrors()
+                ]);
+            }
+
             $model = new UsuarioModel();
 
             $data = [
@@ -143,6 +164,35 @@ class Usuarios extends ResourceController
             return $this->respond([
                 'status' => true,
                 'message' => 'Usuario actualizado correctamente'
+            ]);
+
+        } catch (\Throwable $th) {
+            return $this->respond(['status' => false, 'exception' => $th->getMessage()], 500);
+        }
+    }
+
+
+       public function deletelogic($id = null)
+    {
+        try {
+            $id = $this->request->getPost('id_usuario');
+
+            if (!$id) {
+                return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
+            }
+
+            $model = new UsuarioModel();
+
+            $data = [
+                'is_active'           => false
+
+            ];
+
+            $model->update($id, $data);
+
+            return $this->respond([
+                'status' => true,
+                'message' => 'Usuario ha sido dado de baja'
             ]);
 
         } catch (\Throwable $th) {

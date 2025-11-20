@@ -57,11 +57,22 @@ function cargarUsuarios() {
     fetch(API_USUARIOS + 'index')
         .then(res => res.json())
         .then(json => {
-            if (json.status) llenarTabla(json.dataset);
-            else Swal.fire("Error", json.exception, "error");
+            console.log(json); // Ver respuesta en consola
+
+            if (json.status) {
+                // Verificar si dataset tiene datos
+                if (json.dataset && json.dataset.length > 0) {
+                    llenarTabla(json.dataset);
+                } else {
+                    Swal.fire("Sin datos", "No se encontraron usuarios.", "info");
+                }
+            } else {
+                Swal.fire("Error", json.exception, "error");
+            }
         })
         .catch(() => Swal.fire("Error", "No se pudo cargar la tabla", "error"));
 }
+
 
 function llenarTabla(dataset) {
     let content = '';
@@ -208,7 +219,7 @@ document.getElementById('save-form').addEventListener('submit', e => {
 window.openDeleteDialog = function (id) {
 
     Swal.fire({
-        title: "¿Eliminar usuario?",
+        title: "¿Desea dar de baja al usuario?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Eliminar",
@@ -220,12 +231,13 @@ window.openDeleteDialog = function (id) {
             const form = new FormData();
             form.append('id_usuario', id);
 
-            fetch(API_USUARIOS + 'delete', {
+            fetch(API_USUARIOS + 'deletelogic', {
                 method: 'POST',
                 body: form
             })
                 .then(res => res.json())
                 .then(json => {
+                    console.log(json);
                     if (!json.status) return Swal.fire("Error", json.exception, "error");
 
                     Swal.fire("Eliminado", "Usuario eliminado correctamente", "success");

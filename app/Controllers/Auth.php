@@ -54,59 +54,72 @@ class Auth extends ResourceController
         }
     }
 
-    public function login()
-    {
-        try {
-            $alias = $this->request->getPost('alias_usuario');
-            $clave = $this->request->getPost('clave_usuario');
+  public function login()
+{
+    try {
+        $alias = $this->request->getPost('alias_usuario');
+        $clave = $this->request->getPost('clave_usuario');
 
-            if (!$alias || !$clave) {
-                return $this->respond([
-                    'status' => false,
-                    'exception' => 'Faltan datos'
-                ], 400);
-            }
-
-            $model = new UsuarioModel();
-
-            // Buscar usuario por alias
-            $user = $model->where('username', $alias)->first();
-
-            // Usuario no existe
-            if (!$user) {
-                return $this->respond([
-                    'status' => false,
-                    'exception' => 'El usuario no existe o existe una clave incorrecta.'
-                ], 404);
-            }
-
-            // Verificar contraseña
-            if (!password_verify($clave, $user['password_hash'])) {
-                return $this->respond([
-                    'status' => false,
-                    'exception' => 'Contraseña incorrecta'
-                ], 401);
-            }
-
-            // Iniciar sesión
-            session()->set([
-                'id_usuario'    => $user['id'],
-                'alias_usuario' => $user['username'],
-                'login'         => true
-            ]);
-
-            return $this->respond([
-                'status' => true,
-                'message' => 'Autenticación exitosa'
-            ]);
-
-        } catch (\Throwable $th) {
+        if (!$alias || !$clave) {
             return $this->respond([
                 'status' => false,
-                'exception' => $th->getMessage()
-            ], 500);
+                'exception' => 'Faltan datos'
+            ], 400);
         }
+
+        $model = new UsuarioModel();
+
+        // Obtener usuario con su tipo
+        $user = $model->select('users.*, roles.name as tipo_usuario')
+                      ->join('roles', 'roles.id = users.role_id')
+                      ->where('users.username', $alias)
+                      ->first();
+
+        // Usuario no existe
+        if (!$user) {
+            return $this->respond([
+                'status' => false,
+                'exception' => 'El usuario no existe o la clave es incorrecta.'
+            ], 404);
+        }
+
+        // Validar si está activo
+            if ($user['is_active'] !== 't') {
+        return $this->respond([
+            'status' => false,
+            'exception' => 'El usuario está inactivo.'
+        ], 403);
     }
+
+        // Verificar contraseña
+        if (!password_verify($clave, $user['password_hash'])) {
+            return $this->respond([
+                'status' => false,
+                'exception' => 'Contraseña incorrecta'
+            ], 401);
+        }
+
+        // Iniciar sesión
+        session()->set([
+            'id_usuario'    => $user['id'],
+            'alias_usuario' => $user['username'],
+            'tipo_usuario'  => $user['tipo_usuario'], // ← GUARDAR TIPO
+            'login'         => true
+        ]);
+
+        return $this->respond([
+            'status' => true,
+            'message' => 'Autenticación exitosa'
+        ]);
+
+    } catch (\Throwable $th) {
+        return $this->respond([
+            'status' => false,
+            'exception' => $th->getMessage()
+        ], 500);
+    }
+}
+
 
     public function logOut()
 {
