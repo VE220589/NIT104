@@ -172,6 +172,111 @@ class Usuarios extends ResourceController
     }
 
 
+    public function updatePerfil()
+{
+    try {
+
+        $id = $this->request->getPost('id_usuario');
+
+        if (!$id) {
+            return $this->respond(['status' => false, 'message' => 'Falta el ID'], 400);
+        }
+
+        $model = new UsuarioModel();
+        $usuarioActual = $model->find($id);
+
+        if (!$usuarioActual) {
+            return $this->respond(['status' => false, 'message' => 'Usuario no encontrado'], 404);
+        }
+
+        // ============================================================
+        // VALIDAR CONTRASEÑA ACTUAL
+        // ============================================================
+        $claveActual = $this->request->getPost('clave_actual');
+
+        if (!$claveActual || !password_verify($claveActual, $usuarioActual['password_hash'])) {
+            return $this->respond([
+                'status' => false,
+                'message' => 'La contraseña actual es incorrecta'
+            ], 401);
+        }
+
+        // ============================================================
+        // VALIDACIÓN DE CAMPOS
+        // ============================================================
+        $validation = \Config\Services::validation();
+
+        $rules = [
+            'nombres_usuario'    => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]',
+            'apellidos_usuario'  => 'required|regex_match[/^[\p{L}\s]+$/u]|min_length[3]|max_length[50]',
+            'correo_usuario'     => 'required|valid_email|max_length[100]',
+            'alias_usuario'      => 'required|min_length[3]|max_length[50]',
+        ];
+
+        if (!$validation->setRules($rules)->withRequest($this->request)->run()) {
+            return $this->respond([
+                'status' => false,
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        // ============================================================
+        // PREPARAR LOS DATOS A ACTUALIZAR
+        // ============================================================
+        $data = [
+            'name'       => $this->request->getPost('nombres_usuario'),
+            'last_name'  => $this->request->getPost('apellidos_usuario'),
+            'email'      => $this->request->getPost('correo_usuario'),
+            'username'   => $this->request->getPost('alias_usuario'),
+        ];
+
+        // ============================================================
+        // SI VIENE CONTRASEÑA NUEVA → ACTUALIZARLA
+        // ============================================================
+        $claveNueva = $this->request->getPost('clave_usuario');
+        $confirmarClave = $this->request->getPost('confirmar_clave');
+
+        if ($claveNueva) {
+
+            // Validar confirmación
+            if ($claveNueva !== $confirmarClave) {
+                return $this->respond([
+                    'status' => false,
+                    'message' => 'Las claves no coinciden'
+                ], 400);
+            }
+
+            // Guardar nueva contraseña
+            $data['password_hash'] = password_hash($claveNueva, PASSWORD_DEFAULT);
+        }
+
+        // ============================================================
+        // GUARDAR EN BD
+        // ============================================================
+        $model->update($id, $data);
+
+        if (session('id_usuario') == $id) {
+            // IMPORTANTE: Solo actualizar si vienen datos nuevos
+            if (isset($data['username'])) {
+                session()->set('alias_usuario', $data['username']);
+            }
+        }
+
+        return $this->respond([
+            'status' => true,
+            'message' => 'Perfil actualizado correctamente'
+        ]);
+
+
+    } catch (\Throwable $th) {
+        return $this->respond([
+            'status' => false,
+            'exception' => $th->getMessage()
+        ], 500);
+    }
+}
+
+
        public function deletelogic($id = null)
     {
         try {

@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Cuando NO existen usuarios → redirigir a Registro
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Sin usuarios registrados',
+                        title: 'Sin usuarios registrados, revise la base de datos',
                         text: response.exception
                     }).then(() => {
-                        window.location.href = '/register';
+                         window.location.href = '/NIT104/public/dashboard'
                     });
                 }
             }

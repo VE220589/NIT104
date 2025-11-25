@@ -1,9 +1,9 @@
 <?= $this->extend('layouts/dashboard_public') ?>
 
-<?= $this->section('title') ?>Gestión de usuarios<?= $this->endSection() ?>
+<?= $this->section('title') ?>Gestión de servicios<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3 class="center-align">Gestión de Usuarios</h3>
+<h3 class="center-align">Gestión de Servicios</h3>
 <div class="row">
     <!-- Formulario de búsqueda -->
     <form method="post" id="search-form">
@@ -30,11 +30,8 @@
     <!-- Cabeza de la tabla para mostrar los títulos de las columnas -->
     <thead>
         <tr>
-            <th>APELLIDOS</th>
-            <th>NOMBRES</th>
-            <th>CORREO</th>
-            <th>ALIAS</th>
-            <th>ROL</th>
+            <th>DESCRIPCIÓN</th>
+            <th>CLASIFICACIÓN</th>
             <th>ESTADO</th>
             <th class="actions-column">ACCIONES</th>
         </tr>
@@ -50,51 +47,21 @@
         <h4 id="modal-title" class="center-align"></h4>
 
         <form method="post" id="save-form">
-            <input class="hide" type="text" id="id_usuario" name="id_usuario"/>
+            <input class="hide" type="text" id="id_servicio" name="id_servicio"/>
 
             <div class="row">
                 <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">person</i>
-                    <input id="nombres_usuario" type="text" name="nombres_usuario" class="validate" required/>
-                    <label for="nombres_usuario">Nombres</label>
-                </div>
-
-                <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">person</i>
-                    <input id="apellidos_usuario" type="text" name="apellidos_usuario" class="validate" required/>
-                    <label for="apellidos_usuario">Apellidos</label>
-                </div>
-
-                <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">email</i>
-                    <input id="correo_usuario" type="email" name="correo_usuario" class="validate" required/>
-                    <label for="correo_usuario">Correo</label>
-                </div>
-
-                <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">person_pin</i>
-                    <input id="alias_usuario" type="text" name="alias_usuario" class="validate" readonly/>
-                    <label for="alias_usuario">Alias</label>
-                </div>
-
-                <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">security</i>
-                    <input id="clave_usuario" type="password" name="clave_usuario" class="validate" required/>
-                    <label for="clave_usuario">Clave</label>
-                </div>
-
-                <div class="input-field col s12 m6">
-                    <i class="material-icons prefix">security</i>
-                    <input id="confirmar_clave" type="password" name="confirmar_clave" class="validate" required/>
-                    <label for="confirmar_clave">Confirmar clave</label>
+                    <i class="material-icons prefix">assignment</i>
+                    <input id="desc" type="text" name="desc" class="validate" required/>
+                    <label for="desc">Servicio</label>
                 </div>
 
                 <div class="input-field col s12 m6">
                     <i class="material-icons prefix">assignment_ind</i>
-                    <select id="id_tipo_usuario" name="id_tipo" required>
+                    <select id="id_tipo_servicio" name="id_tipo" required>
                         <option value="" disabled selected>Seleccione un tipo</option>
                     </select>
-                    <label for="id_tipo_usuario">Tipo de usuario</label>
+                    <label for="id_tipo_servicio">Tipo de usuario</label>
                 </div>
 
             </div>
@@ -117,7 +84,7 @@
 
 <?= $this->section('scripts') ?>
 <script src="/NIT104/public/js/dashboard/main.js"></script>
-<script src="/NIT104/public/js/dashboard/usuarios.js"></script>
+<script src="/NIT104/public/js/dashboard/servicios.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const tipoUsuario = "<?= session()->get('tipo_usuario') ?>";

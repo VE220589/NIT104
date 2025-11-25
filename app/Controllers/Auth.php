@@ -69,13 +69,12 @@ class Auth extends ResourceController
 
         $model = new UsuarioModel();
 
-        // Obtener usuario con su tipo
-        $user = $model->select('users.*, roles.name as tipo_usuario')
+        // Obtener usuario con su rol
+        $user = $model->select('users.*, roles.name as tipo_usuario, roles.id as role_id')
                       ->join('roles', 'roles.id = users.role_id')
                       ->where('users.username', $alias)
                       ->first();
 
-        // Usuario no existe
         if (!$user) {
             return $this->respond([
                 'status' => false,
@@ -84,14 +83,14 @@ class Auth extends ResourceController
         }
 
         // Validar si está activo
-            if ($user['is_active'] !== 't') {
-        return $this->respond([
-            'status' => false,
-            'exception' => 'El usuario está inactivo.'
-        ], 403);
-    }
+        if ($user['is_active'] !== 't') {
+            return $this->respond([
+                'status' => false,
+                'exception' => 'El usuario está inactivo.'
+            ], 403);
+        }
 
-        // Verificar contraseña
+        // Validar contraseña
         if (!password_verify($clave, $user['password_hash'])) {
             return $this->respond([
                 'status' => false,
@@ -99,11 +98,33 @@ class Auth extends ResourceController
             ], 401);
         }
 
-        // Iniciar sesión
+        // ==========================================
+        // CARGAR PERMISOS DEL ROL
+        // ==========================================
+        $db = \Config\Database::connect();
+
+        $sql = "
+            SELECT p.name
+            FROM permissions p
+            JOIN role_permissions rp ON rp.permission_id = p.id
+            WHERE rp.role_id = ?
+            AND rp.status = 't';
+        ";
+
+        $permisosDB = $db->query($sql, [$user['role_id']])->getResultArray();
+
+        // Convertir a arreglo simple ["users.create", "users.view", ...]
+        $permisos = array_column($permisosDB, 'name');
+
+        // ==========================================
+        // GUARDAR EN SESIÓN
+        // ==========================================
         session()->set([
             'id_usuario'    => $user['id'],
             'alias_usuario' => $user['username'],
-            'tipo_usuario'  => $user['tipo_usuario'], // ← GUARDAR TIPO
+            'tipo_usuario'  => $user['tipo_usuario'],
+            'role_id'       => $user['role_id'],
+            'permissions'   => $permisos,
             'login'         => true
         ]);
 

@@ -14,6 +14,10 @@ $routes->get('/api/auth/logOut', 'Auth::logOut'); // API de logout (puedes prote
 // Rutas protegidas (requieren login)
 $routes->get('/main', 'Main::main', ['filter' => 'auth']); // Página del dashboard protegida
 $routes->get('/usuarios1', 'Usuarios1::usuarios1', ['filter' => 'auth']);
+$routes->get('/roles', 'Roles::roles', ['filter' => 'auth']);
+$routes->get('/perfil', 'Perfil::perfil', ['filter' => 'auth']);
+$routes->get('/servicios', 'Servicios::servicios', ['filter' => 'auth']);
+$routes->get('/ticket', 'Ticket::ticket', ['filter' => 'auth']);
 // Agrega más rutas protegidas aquí, por ejemplo:
 // $routes->get('/perfil', 'Usuario::perfil', ['filter' => 'auth']);
 
@@ -24,17 +28,56 @@ $routes->group('api/usuarios/', ['namespace' => 'App\Controllers'], function($ro
     $routes->post('update', 'Usuarios::update');
     $routes->post('delete', 'Usuarios::delete');
     $routes->post('search', 'Usuarios::search');
-     $routes->post('deletelogic', 'Usuarios::deletelogic');
+    $routes->post('deletelogic', 'Usuarios::deletelogic');
+    $routes->post('updatePerfil', 'Usuarios::updatePerfil');
     //$routes->get('test', 'Usuarios::test');
     // RUTAS FALTANTES
     $routes->get('getTipo', 'Usuarios::getTipo');
     $routes->get('getEstado', 'Usuarios::getEstado');
 });
 
-$routes->get('usuarios/test', 'Usuarios::test');
-$routes->get('usuarios/testTable', 'Usuarios::testTable');
-$routes->get('usuarios/whichdb', 'Usuarios::whichdb');
-$routes->get('usuarios/raw', 'Usuarios::raw');
+$routes->group('api/tickets/', ['namespace' => 'App\Controllers'], function($routes){
+    $routes->get('index', 'Tickets::index');
+    $routes->post('readOne', 'Tickets::readOne');
+    $routes->post('create', 'Tickets::create');
+    $routes->post('update', 'Tickets::update');
+    $routes->post('delete', 'Tickets::delete');
+    $routes->post('search', 'Tickets::search');
+    $routes->post('deletelogic', 'Tickets::deletelogic');
+    $routes->post('updatePerfil', 'Tickets::updatePerfil');
+    //$routes->get('test', 'Usuarios::test');
+    // RUTAS FALTANTES
+    $routes->get('getServices', 'Tickets::getServices');
+    $routes->get('getUsuarios', 'Tickets::getUsuarios');
+});
+
+
+
+$routes->group('api/services/', ['namespace' => 'App\Controllers'], function($routes){
+    $routes->get('index', 'Services::index');
+    $routes->post('readOne', 'Services::readOne');
+    $routes->post('create', 'Services::create');
+    $routes->post('update', 'Services::update');
+    $routes->post('delete', 'Services::delete');
+    $routes->post('search', 'Services::search');
+    $routes->post('deletelogic', 'Services::deletelogic');
+    $routes->get('getTipo', 'Services::getTipo');
+});
+
+$routes->group('api/rolest/', ['namespace' => 'App\Controllers'], function($routes){
+    $routes->get('index', 'Rolest::index');
+});
+
+
+
+
+$routes->group('api/permisos/', ['namespace' => 'App\Controllers'], function($routes){
+    $routes->post('readByRoleAndModule', 'Permisos::readByRoleAndModule');
+    $routes->post('updateByRoleAndModule', 'Permisos::updateByRoleAndModule'); 
+});
+
+
+
 
 
 

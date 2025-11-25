@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,41 +19,45 @@
                         <div class="navbar-fixed">
                             <nav class="teal">
                                 <div class="nav-wrapper">
-                                    <a href="main" class="brand-logo"><img src="../../resources/img/logo.png" height="60"></a>
+                                    <a href="main" class="brand-logo right"><img src="/NIT104/public/resources/img/logo.png" height="60"></a>
                                     <a href="#" data-target="mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-                                    <ul class="right hide-on-med-and-down">
-                                        <li><a href="productos.php"><i class="material-icons left">shop</i>Productos</a></li>
-                                        <li><a href="categorias.php"><i class="material-icons left">shop_two</i>Categorías</a></li>
-                                        <li><a href="clientes.php"><i class="material-icons left">contacts</i>Clientes</a></li>
+                                    <ul class="left hide-on-med-and-down">
+                                        <?php if (in_array('roles.view', session('permissions'))): ?>
+                                            <li><a href="roles"><i class="material-icons left">admin_panel_settings</i>Roles</a></li>
+                                        <?php endif; ?>
+                                        
+                                        <li><a href="servicios"><i class="material-icons left">handyman</i>Servicios</a></li>
+                                        <li><a href="ticket"><i class="material-icons left">assignment</i>Tickets</a></li>
+                                         <?php if (in_array('users.view', session('permissions'))): ?>
                                         <li><a href="usuarios1"><i class="material-icons left">group</i>Usuarios</a></li>
+                                         <?php endif; ?>
                                         <li><a href="#" class="dropdown-trigger" data-target="dropdown"><i class="material-icons left">verified_user</i>Cuenta: <b><?= session()->get('alias_usuario') ?? 'Invitado' ?></b></a></li>
                                     </ul>
                                     <ul id="dropdown" class="dropdown-content">
-                                        <li><a href="#" onclick="openProfileDialog()"><i class="material-icons">face</i>Editar perfil</a></li>
-                                        <li><a href="#" onclick="openPasswordDialog()"><i class="material-icons">lock</i>Cambiar clave</a></li>
+                                        <li><a href="#" onclick="openProfileDialog()"><i class="material-icons">face</i><?= session()->get('tipo_usuario') ?></a></li>
+                                        <li><a href="perfil"><i class="material-icons">lock</i>Ver cuenta</a></li>
                                         <li><a href="#" onclick="logOut()"><i class="material-icons">clear</i>Salir</a></li>
                                     </ul>
                                 </div>
                             </nav>
                         </div>
                         <ul class="sidenav" id="mobile">
-                            <li><a href="productos.php"><i class="material-icons">shop</i>Productos</a></li>
-                            <li><a href="categorias.php"><i class="material-icons">shop_two</i>Categorías</a></li>
-                            <li><a href="clientes.php"><i class="material-icons">contacts</i>Clientes</a></li>
+                            <li><a href="roles"><i class="material-icons">admin_panel_settings</i>Roles</a></li>
+                            <li><a href="servicios"><i class="material-icons">handyman</i>Servicios</a></li>
+                            <li><a href="ticket"><i class="material-icons">assignment</i>Tickets</a></li>
                             <li><a href="usuarios1"><i class="material-icons">group</i>Usuarios</a></li>
                             <li><a class="dropdown-trigger" href="#" data-target="dropdown-mobile"><i class="material-icons">verified_user</i>Cuenta: <b><?= session()->get('alias_usuario') ?? 'Invitado' ?></b></a></li>
                         </ul>
                         <ul id="dropdown-mobile" class="dropdown-content">
-                            <li><a href="#" onclick="openProfileDialog()">Editar perfil</a></li>
-                            <li><a href="#" onclick="openPasswordDialog()">Cambiar clave</a></li>
-                            <li><a href="#" onclick="logOut()">Salir</a></li>
+                            <li><a href="#" onclick="openProfileDialog()"><i class="material-icons">face</i><?= session()->get('tipo_usuario') ?></a></li>
+                            <li><a href="perfil"><i class="material-icons">lock</i>Ver cuenta</a></li>
+                            <li><a href="#" onclick="logOut()"><i class="material-icons">clear</i>Salir</a></li>
                         </ul>
                     </header>
 
-<main class="container">
-    <h3 class="center-align"><?= $this->renderSection('title') ?></h3>
-
+<main class="container">                                       
     <?= $this->renderSection('content') ?>
+   
 </main>
 
 <footer class="page-footer teal">

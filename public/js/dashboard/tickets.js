@@ -2,12 +2,18 @@
 // CONFIG Y EVENTOS PRINCIPALES
 // ===============================
 
-const API_USUARIOS = '/NIT104/public/api/usuarios/';
+const API_TICKETS = '/NIT104/public/api/tickets/';
 
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     M.Modal.init(document.querySelectorAll('.modal'));
-    cargarUsuarios();
+    cargarTickets();
+    const select = document.getElementById('prioridad');
+    M.FormSelect.init(select);
+    const select1 = document.getElementById('estado');
+    M.FormSelect.init(select1);
+    const select2 = document.getElementById('id_tipo_ticket');
+    M.FormSelect.init(select2);
     cargarCombos();
 });
 
@@ -21,18 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function cargarCombos() {
     // Para tipos de usuario
-    cargarCombo('getTipo', 'id_tipo_usuario', 'id', 'nombre');
+    cargarCombo('getServices', 'id_servicio', 'id', 'desc');
 
-    // Para estados de usuario
-    //cargarCombo('getEstado', 'id_estado_usuario', 'id', 'nombre');
+    // Para cargar los usuarios
+    cargarCombo('getUsuarios', 'id_asignado', 'id', 'nombre');
 }
 
 function cargarCombo(endpoint, selectId, idField, textField) {
-    fetch(API_USUARIOS + endpoint)
+    fetch(API_TICKETS + endpoint)
         .then(res => res.json())
         .then(json => {
+             console.log(json);
             if (!json.status) return;
-
             const select = document.getElementById(selectId);
             select.innerHTML = ''; // Limpiar opciones anteriores
 
@@ -53,8 +59,8 @@ function cargarCombo(endpoint, selectId, idField, textField) {
 // CARGA DE TABLA
 // ===============================
 
-function cargarUsuarios() {
-    fetch(API_USUARIOS + 'index')
+function cargarTickets() {
+    fetch(API_TICKETS + 'index')
         .then(res => res.json())
         .then(json => {
             console.log(json); // Ver respuesta en consola
@@ -76,64 +82,72 @@ function cargarUsuarios() {
 
 function llenarTabla(dataset) {
     let content = '';
-
     dataset.forEach(row => {
-         if (tipoUsuario === "admin") {
-           content += `
-            <tr>
-                <td>${row.last_name}</td>
-                <td>${row.name}</td>
-                <td>${row.email}</td>
-                <td>${row.username}</td>
-                <td>${row.tipo}</td>
-                <td>${row.is_active}</td>
+        if(row.assigned_to != null && row.status != "closed"){
+            content += `
+                <tr>
+                    <td>${row.ticket_number}</td>
+                    <td>${row.title}</td>
+                    <td>${row.description}</td>
+                    <td>${row.ticket_type}</td>
+                    <td>${row.status}</td>
+                    <td>${row.priority}</td>
+                    <td>${row.service_name}</td>
+                    <td>${row.creado_por}</td>
+                    <td>${row.asignado_a}</td>
+                    <td>${row.cerrado_por}</td>
                 <td>
-                    <a class="btn blue tooltipped" data-tooltip="Actualizar"
+                        <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Actualizar"
+                            onclick="openUpdateDialog(${row.id})">
+                            <i class="material-icons">mode_edit</i>
+                        </a>
+
+                        <a class="btn red tooltipped" style="margin-top: 5px;" data-tooltip="Cerrar ticket"
+                            onclick="openDeleteDialog(${row.id})">
+                            <i class="material-icons">exit_to_app</i>
+                        </a>
+                    </td>
+
+                </tr>
+            `; 
+        }else if(row.assigned_to == null && row.status != "closed") {
+                content += `
+            <tr>
+                <td>${row.ticket_number}</td>
+                <td>${row.title}</td>
+                <td>${row.description}</td>
+                <td>${row.ticket_type}</td>
+                <td>${row.status}</td>
+                <td>${row.priority}</td>
+                <td>${row.service_name}</td>
+                <td>${row.creado_por}</td>
+                <td>${row.asignado_a}</td>
+                <td>${row.cerrado_por}</td>
+               <td>
+                    <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Actualizar"
                         onclick="openUpdateDialog(${row.id})">
                         <i class="material-icons">mode_edit</i>
                     </a>
-                    <a class="btn red tooltipped" data-tooltip="Eliminar"
-                        onclick="openDeleteDialog(${row.id})">
-                        <i class="material-icons">delete</i>
-                    </a>
                 </td>
-            </tr>
-        `;
-        }else if(tipoUsuario === "support"){
-            content += `
-            <tr>
-                <td>${row.last_name}</td>
-                <td>${row.name}</td>
-                <td>${row.email}</td>
-                <td>${row.username}</td>
-                <td>${row.tipo}</td>
-                <td>${row.is_active}</td>
-                <td>Acciones no disponibles para tu rol</td>
             </tr>
         `;
         }else{
-             content += `
+                content += `
             <tr>
-                <td>${row.last_name}</td>
-                <td>${row.name}</td>
-                <td>${row.email}</td>
-                <td>${row.username}</td>
-                <td>${row.tipo}</td>
-                <td>${row.is_active}</td>
-                <td>
-                    <a class="btn blue tooltipped" data-tooltip="Actualizar"
-                        onclick="openUpdateDialog(${row.id})">
-                        <i class="material-icons">mode_edit</i>
-                    </a>
-                    <a class="btn red tooltipped" data-tooltip="Eliminar"
-                        onclick="openDeleteDialog(${row.id})">
-                        <i class="material-icons">delete</i>
-                    </a>
-                </td>
+                <td>${row.ticket_number}</td>
+                <td>${row.title}</td>
+                <td>${row.description}</td>
+                <td>${row.ticket_type}</td>
+                <td>${row.status}</td>
+                <td>${row.priority}</td>
+                <td>${row.service_name}</td>
+                <td>${row.creado_por}</td>
+                <td>${row.asignado_a}</td>
+                <td>${row.cerrado_por}</td>
+                <td>Ticket cerrado</td>
             </tr>
         `;
         }
-        
     });
 
     document.getElementById('tbody-rows').innerHTML = content;
@@ -148,15 +162,11 @@ window.openCreateDialog = function () {
     const modal = M.Modal.getInstance(document.getElementById('save-modal'));
 
     document.getElementById('save-form').reset();
-    document.getElementById('modal-title').textContent = 'Crear usuario';
-
-    document.getElementById('alias_usuario').disabled = false;
-    document.getElementById('alias_usuario').readOnly = false;
-    document.getElementById('clave_usuario').disabled = false;
-    document.getElementById('confirmar_clave').disabled = false;
-
-    document.getElementById('id_usuario').value = '';
-
+    document.getElementById('modal-title').textContent = 'Crear ticket';
+    document.getElementById('id_ticket').value = '';
+    document.getElementById('estado_container').style.display = "none";
+    document.getElementById('check_container').style.display = "block";
+    document.getElementById('usuarios_container').style.display = "none";
 
     cargarCombos();
     modal.open();
@@ -168,11 +178,11 @@ window.openCreateDialog = function () {
 
 window.openUpdateDialog = function (id) {
     const modal = M.Modal.getInstance(document.getElementById('save-modal'));
-
+    document.getElementById('miCheck').checked = false;
     const form = new FormData();
-    form.append('id_usuario', id);
+    form.append('id_ticket', id);
 
-    fetch(API_USUARIOS + 'readOne', {
+    fetch(API_TICKETS + 'readOne', {
         method: 'POST',
         body: form
     })
@@ -182,21 +192,28 @@ window.openUpdateDialog = function (id) {
 
         const d = json.dataset;
 
-        document.getElementById('modal-title').textContent = 'Actualizar usuario';
-        document.getElementById('id_usuario').value = d.id;
-        document.getElementById('nombres_usuario').value = d.name;
-        document.getElementById('apellidos_usuario').value = d.last_name;
-        document.getElementById('correo_usuario').value = d.email;
-        document.getElementById('alias_usuario').value = d.username;
-
-        // Desactivar alias y claves
-        document.getElementById('alias_usuario').readOnly = true;
-        document.getElementById('clave_usuario').disabled = true;
-        document.getElementById('confirmar_clave').disabled = true;
-
+        document.getElementById('modal-title').textContent = 'Actualizar ticket';
+        document.getElementById('id_ticket').value = d.id;
+        document.getElementById('title').value = d.title;
+        document.getElementById('desc').value = d.description;
+        //Activar los campos de estado y usuario
+        document.getElementById('estado_container').style.display = "block";
+        document.getElementById('usuarios_container').style.display = "none";
         // Asignar valores de selects y reinicializar Materialize
         setTimeout(() => {
-            document.getElementById('id_tipo_usuario').value = d.role_id;
+            document.getElementById('id_tipo_ticket').value = d.ticket_type;
+            document.getElementById('prioridad').value = d.priority;
+            document.getElementById('id_servicio').value = d.service_id;
+            document.getElementById('estado').value = d.status;
+            if (d.assigned_to === null) {
+                document.getElementById('miCheck').checked = false
+                document.getElementById('check_container').style.display = "block";
+                document.getElementById('id_asignado').value = 2;
+            } else {
+                document.getElementById('usuarios_container').style.display = "block";
+                 document.getElementById('check_container').style.display = "none";
+                document.getElementById('id_asignado').value = d.assigned_to;
+            }
 
             // Reinicializar selects de Materialize para que tomen el valor
             const selects = document.querySelectorAll('select');
@@ -206,9 +223,17 @@ window.openUpdateDialog = function (id) {
         M.updateTextFields();
         modal.open();
     })
-    .catch(() => Swal.fire("Error", "No se pudo leer el usuario", "error"));
+    .catch(() => Swal.fire("Error", "No se pudo leer el TICKET", "error"));
 };
 
+
+document.getElementById('miCheck').addEventListener('change', function () {
+    if (this.checked) {
+        document.getElementById('usuarios_container').style.display = "block";
+    } else {
+         document.getElementById('usuarios_container').style.display = "none";
+    }
+});
 
 // ===============================
 // GUARDAR (CREATE / UPDATE)
@@ -218,16 +243,32 @@ document.getElementById('save-form').addEventListener('submit', e => {
     e.preventDefault();
 
     const form = new FormData(e.target);
-    const isUpdate = form.get('id_usuario') !== '';
+
+    // --- CONTROL DE ASIGNADO ---
+    const checkUsers = document.getElementById('usuarios_container');
+    const asignadoSelect = document.getElementById('id_asignado');
+
+    if (checkUsers.style.display === "block") {
+         // Si está visible → enviar valor del select (aunque esté vacío)
+        form.set('id_asignado', asignadoSelect.value);
+    } else if (checkUsers.style.display === "none") {
+
+        // Si está oculto → asignado debe ser NULL
+        form.set('id_asignado', null);
+    }
+
+    // Saber si es update o create
+    const isUpdate = form.get('id_ticket') !== '';
     const action = isUpdate ? 'update' : 'create';
 
-    fetch(API_USUARIOS + action, {
+    fetch(API_TICKETS + action, {
         method: 'POST',
         body: form
     })
     .then(res => res.json())
     .then(json => {
-        console.log(json);//Para ver la respuesta del json en la consola
+        console.log(json);
+
         if (!json.status) {
             let errorMessage = 
                 json.exception ||
@@ -242,10 +283,11 @@ document.getElementById('save-form').addEventListener('submit', e => {
 
         Swal.fire("Éxito", json.message, "success");
         M.Modal.getInstance(document.getElementById('save-modal')).close();
-        cargarUsuarios();
+        cargarTickets();
     })
-    .catch(() => Swal.fire("Error", "No se pudo guardar el usuario", "error"));
+    .catch(() => Swal.fire("Error", "No se pudo guardar el TICKET", "error"));
 });
+
 
 
 // ===============================
@@ -255,7 +297,7 @@ document.getElementById('save-form').addEventListener('submit', e => {
 window.openDeleteDialog = function (id) {
 
     Swal.fire({
-        title: "¿Desea dar de baja al usuario?",
+        title: "¿Desea cerrar el ticket?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Eliminar",
@@ -265,9 +307,9 @@ window.openDeleteDialog = function (id) {
             if (!result.isConfirmed) return;
 
             const form = new FormData();
-            form.append('id_usuario', id);
+            form.append('id_ticket', id);
 
-            fetch(API_USUARIOS + 'deletelogic', {
+            fetch(API_TICKETS + 'deletelogic', {
                 method: 'POST',
                 body: form
             })
@@ -276,8 +318,8 @@ window.openDeleteDialog = function (id) {
                     console.log(json);
                     if (!json.status) return Swal.fire("Error", json.exception, "error");
 
-                    Swal.fire("Eliminado", "Usuario eliminado correctamente", "success");
-                    cargarUsuarios();
+                    Swal.fire("Eliminado", "Ticket cerrado correctamente", "success");
+                    cargarTickets();
                 })
                 .catch(() => Swal.fire("Error", "No se pudo eliminar", "error"));
         });

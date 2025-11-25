@@ -15,26 +15,14 @@
 <body>
 
 <header>
-    <div class="navbar-fixed">
-        <nav class="teal">
-            <div class="nav-wrapper">
-                <a href="/" class="brand-logo"><i class="material-icons">dashboard</i></a>
-            </div>
-        </nav>
-    </div>
 </header>
 
 <main class="container">
+    
     <h3 class="center-align"><?= $this->renderSection('title') ?></h3>
 
     <?= $this->renderSection('content') ?>
 </main>
-
-<footer class="page-footer teal">
-    <div class="container">
-        <h5 class="white-text">Dashboard</h5>
-    </div>
-</footer>
 
 <script src="/NIT104/public/resources/js/materialize.min.js"></script>
 <script src="/NIT104/public/resources/js/sweetalert.min.js"></script>

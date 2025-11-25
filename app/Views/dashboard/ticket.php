@@ -1,0 +1,156 @@
+<?= $this->extend('layouts/dashboard_public') ?>
+
+<?= $this->section('title') ?>Gestión de Tickets<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+<h3 class="center-align">Gestión de Tickets</h3>
+<div class="row">
+    <!-- Formulario de búsqueda -->
+    <form method="post" id="search-form">
+        <div class="input-field col s6 m4">
+            <i class="material-icons prefix">search</i>
+            <input id="search" type="text" name="search" required/>
+            <label for="search">Buscador</label>
+        </div>
+        <div class="input-field col s6 m4">
+            <button type="submit" class="btn waves-effect green tooltipped" data-tooltip="Buscar"><i class="material-icons">check_circle</i></button>
+        </div>
+    </form>
+    <?php if (in_array('users.create', session('permissions'))): ?>
+    <div class="input-field center-align col s12 m4">
+        <!-- Enlace para abrir la caja de dialogo (modal) al momento de crear un nuevo registro -->
+        <a href="#" onclick="openCreateDialog()" class="btn waves-effect indigo tooltipped" data-tooltip="Crear"><i class="material-icons">add_circle</i></a>
+    </div>
+    <?php endif; ?>
+    
+</div>
+
+<!-- Tabla para mostrar los registros existentes -->
+<table class="highlight">
+    <!-- Cabeza de la tabla para mostrar los títulos de las columnas -->
+    <thead>
+        <tr>
+            <th>TICKET</th>
+            <th>TITULO</th>
+            <th>DESCRIPCIÓN</th>
+            <th>TIPO</th>
+            <th>ESTADO</th>
+            <th>PRIORIDAD</th>
+            <th>SERVICIO</th>
+            <th>CREADO POR</th>
+            <th>ASIGNADO A</th>
+            <th>CERRADO POR</th>
+            <th class="actions-column">ACCIONES</th>
+        </tr>
+    </thead>
+    <!-- Cuerpo de la tabla para mostrar un registro por fila -->
+    <tbody id="tbody-rows">
+    </tbody>
+</table>
+
+<!-- Componente Modal para mostrar una caja de dialogo -->
+<div id="save-modal" class="modal">
+    <div class="modal-content">
+        <h4 id="modal-title" class="center-align"></h4>
+
+        <form method="post" id="save-form">
+            <input class="hide" type="text" id="id_ticket" name="id_ticket"/>
+
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">list_alt</i>
+                    <input id="title" type="text" name="title" class="validate" required/>
+                    <label for="title">Titulo</label>
+                </div>
+
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">description</i>
+                    <input id="desc" type="text" name="desc" class="validate" required/>
+                    <label for="desc">Descripción</label>
+                </div>
+
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">note_add</i>
+                    <select id="id_tipo_ticket" name="id_tipo_ticket" required>
+                        <option value="incident">Incidente</option>
+                        <option value="problem">Problema</option>
+                        <option value="change">Cambio</option>
+                    </select>
+                    <label for="id_tipo_ticket">Tipo de ticket</label>
+                </div>
+
+
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">priority_high</i>
+                    <select id="prioridad" name="prioridad" required>
+                        <option value="S">S (Crítica)</option>
+                        <option value="A">A (Alta)</option>
+                        <option value="B">B (Media)</option>
+                        <option value="C">C (Baja)</option>
+                    </select>
+                    <label for="prioridad">Prioridad</label>
+                </div>
+
+
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">bookmark_manager</i>
+                    <select id="id_servicio" name="id_servicio" required>
+                        <option value="" disabled selected>Seleccione un Servicio</option>
+                    </select>
+                    <label for="id_servicio">Servicio</label>
+                </div>
+               
+                     <div class="input-field col s12 m6" id="check_container">
+                        <p>
+                            <label>
+                                <input type="checkbox"  id="miCheck"/>
+                                <span>¿Desea asignar un usuario al ticket?</span>
+                            </label>
+                        </p>
+                    </div>
+                     <div class="input-field col s12 m6" id="usuarios_container">
+                        <i class="material-icons prefix">assignment_ind</i>
+                        <select id="id_asignado" name="id_asignado" required>
+                        </select>
+                        <label for="id_asignado">Asignar a:</label>
+                    </div>
+                
+               
+
+                <div class="input-field col s12 m6" id="estado_container">
+                    <i class="material-icons prefix">assignment_turned_in</i>
+                    <select id="estado" name="estado" required>
+                        <option value="open">Abierto</option>
+                        <option value="in_progress">En progreso</option>
+                        <option value="mitigated">Mitigado</option>
+                        <option value="resolved">Resuelto</option>
+                    </select>
+                    <label for="estado">Estado</label>
+                </div>
+
+            </div>
+            <div class="row center-align">
+                <a href="#" class="btn waves-effect grey tooltipped modal-close" data-tooltip="Cancelar">
+                    <i class="material-icons">cancel</i>
+                </a>
+                <button type="submit" class="btn waves-effect blue tooltipped" data-tooltip="Guardar">
+                    <i class="material-icons">save</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="/NIT104/public/js/dashboard/main.js"></script>
+<script src="/NIT104/public/js/dashboard/tickets.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const tipoUsuario = "<?= session()->get('tipo_usuario') ?>";
+</script>
+<?= $this->endSection() ?>
+
