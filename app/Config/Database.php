@@ -26,9 +26,9 @@ class Database extends Config
      */
     public array $default = [
     'DSN'        => '',
-    'hostname'   => 'tm-server-nti.postgres.database.azure.com',
-    'username'   => 'tmAdmin',
-    'password'   => 'PepeArjon11!',
+    'hostname'   => 'localhost',
+    'username'   => 'postgres',
+    'password'   => '1234',
     'database'   => 'tm_db',
     'schema'     => 'public',
     'DBDriver'   => 'Postgre',
