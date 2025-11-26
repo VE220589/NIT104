@@ -146,11 +146,15 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="/NIT104/public/js/dashboard/main.js"></script>
-<script src="/NIT104/public/js/dashboard/tickets.js"></script>
+<script src="<?= base_url('js/dashboard/main.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/tickets.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const tipoUsuario = "<?= session()->get('tipo_usuario') ?>";
+</script>
+<script>
+    const BASE_URL = "<?= base_url('dashboard') ?>";
+    const API_TICKETS  = "<?= base_url('api/tickets/') ?>";
 </script>
 <?= $this->endSection() ?>
 

@@ -69,7 +69,14 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="/NIT104/public/js/dashboard/index.js"></script>
+<script src="<?= base_url('js/dashboard/index.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const URL_MAIN = "<?= base_url('main') ?>";
+</script>
+<script>
+    const BASE_URL = "<?= base_url('dashboard') ?>";
+    const API_AUTH = "<?= base_url('api/auth/') ?>";
+</script>
 <?= $this->endSection() ?>
 

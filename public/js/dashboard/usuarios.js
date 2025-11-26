@@ -1,9 +1,3 @@
-// ===============================
-// CONFIG Y EVENTOS PRINCIPALES
-// ===============================
-
-const API_USUARIOS = '/NIT104/public/api/usuarios/';
-
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     M.Modal.init(document.querySelectorAll('.modal'));

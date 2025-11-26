@@ -1,9 +1,3 @@
-// ===============================
-// CONFIG Y EVENTOS PRINCIPALES
-// ===============================
-
-const API_TICKETS = '/NIT104/public/api/tickets/';
-
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     M.Modal.init(document.querySelectorAll('.modal'));

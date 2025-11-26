@@ -32,7 +32,12 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="/NIT104/public/js/dashboard/main.js"></script>
+<script src="<?= base_url('js/dashboard/main.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const BASE_URL = "<?= base_url('dashboard') ?>";
+</script>
+
 <?= $this->endSection() ?>
+
 

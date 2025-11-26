@@ -1,9 +1,3 @@
-// ===============================
-// CONFIG Y EVENTOS PRINCIPALES
-// ===============================
-
-const API_ROLES = '/NIT104/public/api/rolest/';
-const API_PERMI = '/NIT104/public/api/permisos/';
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     M.Modal.init(document.querySelectorAll('.modal'));

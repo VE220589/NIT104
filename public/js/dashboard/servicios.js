@@ -1,9 +1,3 @@
-// ===============================
-// CONFIG Y EVENTOS PRINCIPALES
-// ===============================
-
-const API_SERVICIOS = '/NIT104/public/api/services/';
-
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     M.Modal.init(document.querySelectorAll('.modal'));

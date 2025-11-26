@@ -1,11 +1,8 @@
-// URL base para la API
-const API = '/NIT104/public/api/auth/';
-
 document.addEventListener('DOMContentLoaded', () => {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
 
     // Verificar si existen usuarios
-    fetch(API + 'exists')
+    fetch(API_AUTH + 'exists')
         .then(r => r.json())
         .then(response => {
 
@@ -31,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         title: 'Sin usuarios registrados, revise la base de datos',
                         text: response.exception
                     }).then(() => {
-                         window.location.href = '/NIT104/public/dashboard'
+                         window.location.href = BASE_URL;
                     });
                 }
             }
@@ -47,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('session-form').addEventListener('submit', e => {
     e.preventDefault();
 
-    fetch(API + 'login', {
+    fetch(API_AUTH + 'login', {
         method: 'POST',
         body: new FormData(e.target)
     })
@@ -60,7 +57,7 @@ document.getElementById('session-form').addEventListener('submit', e => {
                     title: 'Bienvenido',
                     text: response.message
                 }).then(() => {
-                    window.location.href = '/NIT104/public/main';
+                    window.location.href = URL_MAIN;
                 });
 
             } else {

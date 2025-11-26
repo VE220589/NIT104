@@ -1,5 +1,4 @@
-// URL base para la API 
-const API = '/NIT104/public/api/auth/';
+
 
 // Método manejador de eventos que se ejecuta cuando el documento ha cargado.
 document.addEventListener('DOMContentLoaded', function () {
@@ -31,7 +30,7 @@ function logOut() {
     }).then(result => {
         if (result.isConfirmed) {
 
-            fetch(API + 'logOut', { method: 'GET' })
+            fetch(API_AUTH + 'logOut', { method: 'GET' })
                 .then(r => r.json())
                 .then(response => {
 
@@ -41,7 +40,7 @@ function logOut() {
                             title: 'Sesión cerrada',
                             text: response.message
                         }).then(() => {
-                            window.location.href = '/NIT104/public/dashboard';
+                            window.location.href = BASE_URL;
                         });
 
                     } else {

@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <title>Dashboard - <?= $this->renderSection('title') ?></title>
 
-    <link rel="icon" type="image/png" href="/NIT104/public/resources/img/logo.png">
-    <link rel="stylesheet" href="/NIT104/public/resources/css/materialize.min.css">
-    <link rel="stylesheet" href="/NIT104/public/resources/css/material_icons.css">
-    <link rel="stylesheet" href="/NIT104/public/resources/css/dashboard.css">
+    <link rel="icon" type="image/png" href="<?= base_url('resources/img/logo.png') ?>">
+    <link rel="stylesheet" href="<?= base_url('resources/css/materialize.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('resources/css/material_icons.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('resources/css/dashboard.css') ?>">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
@@ -66,11 +66,14 @@
     </div>
 </footer>
 
-<script src="/NIT104/public/resources/js/materialize.min.js"></script>
-<script src="/NIT104/public/resources/js/sweetalert.min.js"></script>
-<script src="/NIT104/public/resources/components.js"></script>
-<script src="/NIT104/public/js/dashboard/initialization.js"></script>
 
+<script src="<?= base_url('resources/js/materialize.min.js') ?>"></script>
+<script src="<?= base_url('resources/js/sweetalert.min.js') ?>"></script>
+<script src="<?= base_url('resources/components.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/initialization.js') ?>"></script>
+<script>
+    const API_AUTH = "<?= base_url('api/auth/') ?>";
+</script>
 <?= $this->renderSection('scripts') ?>
 
 </body>

@@ -72,10 +72,15 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="/NIT104/public/js/dashboard/main.js"></script>
-<script src="/NIT104/public/js/dashboard/roles.js"></script>
+<script src="<?= base_url('js/dashboard/main.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/roles.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const tipoUsuario = "<?= session()->get('tipo_usuario') ?>";
+</script>
+<script>
+    const BASE_URL = "<?= base_url('dashboard') ?>";
+    const API_ROLES = "<?= base_url('api/rolest/') ?>";
+    const API_PERMI = "<?= base_url('api/permisos/') ?>";
 </script>
 <?= $this->endSection() ?>
