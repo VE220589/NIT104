@@ -5,28 +5,18 @@
 <?= $this->section('content') ?>
 <h3 class="center-align">Gestión de Servicios</h3>
 <div class="row">
-    <!-- Formulario de búsqueda -->
-    <form method="post" id="search-form">
-        <div class="input-field col s6 m4">
-            <i class="material-icons prefix">search</i>
-            <input id="search" type="text" name="search" required/>
-            <label for="search">Buscador</label>
-        </div>
-        <div class="input-field col s6 m4">
-            <button type="submit" class="btn waves-effect green tooltipped" data-tooltip="Buscar"><i class="material-icons">check_circle</i></button>
-        </div>
-    </form>
     <?php if (in_array('users.create', session('permissions'))): ?>
-    <div class="input-field center-align col s12 m4">
-        <!-- Enlace para abrir la caja de dialogo (modal) al momento de crear un nuevo registro -->
-        <a href="#" onclick="openCreateDialog()" class="btn waves-effect indigo tooltipped" data-tooltip="Crear"><i class="material-icons">add_circle</i></a>
-    </div>
+    <a href="#" onclick="openCreateDialog()" 
+   class="btn-large teal darken-1 tooltipped left"
+   data-tooltip="Crear nuevo registro">
+    <i class="material-icons left">add_circle</i>
+    Nuevo
+</a>
     <?php endif; ?>
     
 </div>
 
-<!-- Tabla para mostrar los registros existentes -->
-<table class="highlight">
+<table id="myTable" class="highlight">
     <!-- Cabeza de la tabla para mostrar los títulos de las columnas -->
     <thead>
         <tr>

@@ -73,7 +73,7 @@ function cargarTickets() {
         .catch(() => Swal.fire("Error", "No se pudo cargar la tabla", "error"));
 }
 
-
+let tabla = null;
 function llenarTabla(dataset) {
     let content = '';
     dataset.forEach(row => {
@@ -144,7 +144,21 @@ function llenarTabla(dataset) {
         }
     });
 
+     // 1) Si DataTable ya existe, destruirlo ANTES de cambiar el HTML
+    if (tabla !== null) {
+        tabla.destroy();
+        tabla = null;
+    }
+
+    // 2) Reemplazar el contenido de la tabla
     document.getElementById('tbody-rows').innerHTML = content;
+
+    // 3) Inicializar DataTable correctamente (versión 2.x)
+    tabla = new DataTable('#myTable', {
+        responsive: true
+    });
+
+    // 4) Reactivar tooltips
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
 }
 
@@ -319,45 +333,3 @@ window.openDeleteDialog = function (id) {
         });
 };
 
-// ===============================
-// BUSCAR
-// ===============================
-
-document.getElementById('search-form').addEventListener('submit', e => {
-    e.preventDefault();
-
-    // 1. Capturamos el valor del input directamente
-    const searchInput = document.getElementById('search');
-    const searchValue = searchInput.value.trim();
-
-    // 2. Validación simple
-    if (!searchValue) {
-        Swal.fire("Sin resultados", "El término de búsqueda está vacío", "info");
-        return;
-    }
-
-    // 3. Creamos FormData manualmente
-    const form = new FormData();
-    form.append('search', searchValue);
-
-    // 4. Llamamos a la API
-    fetch(API_USUARIOS + 'search', {
-        method: 'POST',
-        body: form
-    })
-        .then(res => res.json())
-        .then(json => {
-            if (!json.status || !json.dataset || json.dataset.length === 0) {
-                Swal.fire("Sin resultados", "No hay datos coincidentes", "info");
-                llenarTabla([]);
-                return;
-            }
-
-            // 5. Llenamos la tabla correctamente
-            llenarTabla(json.dataset);
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire("Error", "No se pudo realizar la búsqueda", "error");
-        });
-});
