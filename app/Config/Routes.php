@@ -36,6 +36,11 @@ $routes->group('api/usuarios/', ['namespace' => 'App\Controllers'], function($ro
     $routes->get('getEstado', 'Usuarios::getEstado');
 });
 
+$routes->group('api/notas/', ['namespace' => 'App\Controllers'], function($routes){
+    $routes->post('index', 'Notas::index');
+     $routes->post('create', 'Notas::create');
+});
+
 $routes->group('api/tickets/', ['namespace' => 'App\Controllers'], function($routes){
     $routes->get('index', 'Tickets::index');
     $routes->post('readOne', 'Tickets::readOne');

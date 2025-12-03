@@ -3,7 +3,7 @@
 <?= $this->section('title') ?>Gestión de servicios<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3 class="center-align">Gestión de Servicios</h3>
+<h3 class="center-align">Gestiókn de Servicios</h3>
 <div class="row">
     <?php if (in_array('users.create', session('permissions'))): ?>
     <a href="#" onclick="openCreateDialog()" 
@@ -48,7 +48,7 @@
 
                 <div class="input-field col s12 m6">
                     <i class="material-icons prefix">assignment_ind</i>
-                    <select id="id_tipo_servicio" name="id_tipo" required>
+                    <select class="forselect" id="id_tipo_servicio" name="id_tipo"  required>
                         <option value="" disabled selected>Seleccione un tipo</option>
                     </select>
                     <label for="id_tipo_servicio">Tipo de usuario</label>

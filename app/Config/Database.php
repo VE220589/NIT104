@@ -29,7 +29,7 @@ class Database extends Config
     'hostname'   => 'localhost',
     'username'   => 'postgres',
     'password'   => '1234',
-    'database'   => 'tm_db',
+    'database'   => 'tmnotes',
     'schema'     => 'public',
     'DBDriver'   => 'Postgre',
     'DBPrefix'   => '',

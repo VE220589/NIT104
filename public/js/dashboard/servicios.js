@@ -159,8 +159,8 @@ window.openUpdateDialog = function (id) {
             document.getElementById('id_tipo_servicio').value = d.idservice_classification;
 
             // Reinicializar selects de Materialize para que tomen el valor
-            const selects = document.querySelectorAll('select');
-            M.FormSelect.init(selects);
+            const grupo = document.querySelectorAll('#save-modal select');
+            M.FormSelect.init(grupo);
         }, 50);
 
         M.updateTextFields();

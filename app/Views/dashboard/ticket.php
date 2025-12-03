@@ -114,7 +114,6 @@
                         <option value="open">Abierto</option>
                         <option value="in_progress">En progreso</option>
                         <option value="mitigated">Mitigado</option>
-                        <option value="resolved">Resuelto</option>
                     </select>
                     <label for="estado">Estado</label>
                 </div>
@@ -132,6 +131,53 @@
     </div>
 </div>
 
+<!-- Componente Modal de actividades para mostrar una caja de dialogo -->
+<div id="view-modal" class="modal modal-grande">
+    <div class="modal-content">
+        <h4 id="modal-title" class="center-align">Gestión de notas y actividades</h4>
+
+        <form method="post" id="saveview-form">
+            <input class="hide" type="text" id="id_ticketnota" name="id_ticketnota"/>
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <i class="material-icons prefix">description</i>
+                    <input id="descnote" type="text" name="descnote" class="validate" required/>
+                    <label for="descnote">Descripción de la nota</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <button type="submit" 
+                        class="btn-large waves-effect blue tooltipped left" 
+                        data-tooltip="Guardar">
+                        <i class="material-icons left">add_circle</i>
+                        Agregar nota
+                    </button>
+                </div>
+
+                <table class="highlight">
+                    <!-- Cabeza de la tabla para mostrar los títulos de las columnas -->
+                    <thead>
+                        <tr>
+                            <th>TICKET</th>
+                            <th>ACTIVIDAD</th>
+                            <th>CREADO POR</th>
+                            <th>FECHA</th>
+                            <th>TIPO</th>
+                        </tr>
+                    </thead>
+                    <!-- Cuerpo de la tabla para mostrar un registro por fila -->
+                    <tbody id="tbody1-rows">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row center-align">
+                <a href="#" class="btn waves-effect grey tooltipped modal-close" data-tooltip="Cancelar">
+                    <i class="material-icons">cancel</i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 
 <?= $this->endSection() ?>
@@ -144,8 +190,12 @@
     const tipoUsuario = "<?= session()->get('tipo_usuario') ?>";
 </script>
 <script>
+    const ROLE_ID = <?= session()->get('role_id') ?>;
+</script>
+<script>
     const BASE_URL = "<?= base_url('dashboard') ?>";
     const API_TICKETS  = "<?= base_url('api/tickets/') ?>";
+    const API_NOTAS  = "<?= base_url('api/notas/') ?>";
 </script>
 <?= $this->endSection() ?>
 

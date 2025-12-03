@@ -73,12 +73,78 @@ function cargarTickets() {
         .catch(() => Swal.fire("Error", "No se pudo cargar la tabla", "error"));
 }
 
+
 let tabla = null;
 function llenarTabla(dataset) {
     let content = '';
     dataset.forEach(row => {
-        if(row.assigned_to != null && row.status != "closed"){
+        if(ROLE_ID == 1){
             content += `
+                    <tr>
+                        <td>${row.ticket_number}</td>
+                        <td>${row.title}</td>
+                        <td>${row.description}</td>
+                        <td>${row.ticket_type}</td>
+                        <td>${row.status}</td>
+                        <td>${row.priority}</td>
+                        <td>${row.service_name}</td>
+                        <td>${row.creado_por}</td>
+                        <td>${row.asignado_a}</td>
+                        <td>${row.cerrado_por}</td>
+                    <td>
+                            <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Actualizar"
+                                onclick="openUpdateDialog(${row.id})">
+                                <i class="material-icons">mode_edit</i>
+                            </a>
+
+                            <a class="btn red tooltipped" style="margin-top: 5px;" data-tooltip="Cerrar ticket"
+                                onclick="openDeleteDialog(${row.id})">
+                                <i class="material-icons">exit_to_app</i>
+                            </a>
+
+                            <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Ver notas"
+                                onclick="openNoteDialog(${row.id})">
+                                <i class="material-icons">article</i>
+                            </a>
+
+                             <a class="btn green tooltipped" style="margin-top: 5px;" data-tooltip="Solicitar cierre"
+                                onclick="openNoteDialog(${row.id})">
+                                <i class="material-icons">multiple_stop</i>
+                            </a>
+                        </td>
+
+                    </tr>
+                `; 
+        }else{
+            if(row.assigned_to != null && row.status != "closed"){
+                content += `
+                    <tr>
+                        <td>${row.ticket_number}</td>
+                        <td>${row.title}</td>
+                        <td>${row.description}</td>
+                        <td>${row.ticket_type}</td>
+                        <td>${row.status}</td>
+                        <td>${row.priority}</td>
+                        <td>${row.service_name}</td>
+                        <td>${row.creado_por}</td>
+                        <td>${row.asignado_a}</td>
+                        <td>${row.cerrado_por}</td>
+                    <td>
+                            <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Actualizar"
+                                onclick="openUpdateDialog(${row.id})">
+                                <i class="material-icons">mode_edit</i>
+                            </a>
+
+                            <a class="btn red tooltipped" style="margin-top: 5px;" data-tooltip="Cerrar ticket"
+                                onclick="openDeleteDialog(${row.id})">
+                                <i class="material-icons">exit_to_app</i>
+                            </a>
+                        </td>
+
+                    </tr>
+                `; 
+            }else if(row.assigned_to == null && row.status != "closed") {
+                    content += `
                 <tr>
                     <td>${row.ticket_number}</td>
                     <td>${row.title}</td>
@@ -95,52 +161,26 @@ function llenarTabla(dataset) {
                             onclick="openUpdateDialog(${row.id})">
                             <i class="material-icons">mode_edit</i>
                         </a>
-
-                        <a class="btn red tooltipped" style="margin-top: 5px;" data-tooltip="Cerrar ticket"
-                            onclick="openDeleteDialog(${row.id})">
-                            <i class="material-icons">exit_to_app</i>
-                        </a>
                     </td>
-
                 </tr>
-            `; 
-        }else if(row.assigned_to == null && row.status != "closed") {
-                content += `
-            <tr>
-                <td>${row.ticket_number}</td>
-                <td>${row.title}</td>
-                <td>${row.description}</td>
-                <td>${row.ticket_type}</td>
-                <td>${row.status}</td>
-                <td>${row.priority}</td>
-                <td>${row.service_name}</td>
-                <td>${row.creado_por}</td>
-                <td>${row.asignado_a}</td>
-                <td>${row.cerrado_por}</td>
-               <td>
-                    <a class="btn blue tooltipped" style="margin-top: 5px;" data-tooltip="Actualizar"
-                        onclick="openUpdateDialog(${row.id})">
-                        <i class="material-icons">mode_edit</i>
-                    </a>
-                </td>
-            </tr>
-        `;
-        }else{
-                content += `
-            <tr>
-                <td>${row.ticket_number}</td>
-                <td>${row.title}</td>
-                <td>${row.description}</td>
-                <td>${row.ticket_type}</td>
-                <td>${row.status}</td>
-                <td>${row.priority}</td>
-                <td>${row.service_name}</td>
-                <td>${row.creado_por}</td>
-                <td>${row.asignado_a}</td>
-                <td>${row.cerrado_por}</td>
-                <td>Ticket cerrado</td>
-            </tr>
-        `;
+            `;
+            }else{
+                    content += `
+                <tr>
+                    <td>${row.ticket_number}</td>
+                    <td>${row.title}</td>
+                    <td>${row.description}</td>
+                    <td>${row.ticket_type}</td>
+                    <td>${row.status}</td>
+                    <td>${row.priority}</td>
+                    <td>${row.service_name}</td>
+                    <td>${row.creado_por}</td>
+                    <td>${row.asignado_a}</td>
+                    <td>${row.cerrado_por}</td>
+                    <td>Ticket cerrado</td>
+                </tr>
+            `;
+            }
         }
     });
 
@@ -179,6 +219,60 @@ window.openCreateDialog = function () {
     cargarCombos();
     modal.open();
 };
+
+
+window.openNoteDialog = function (id) {
+
+    const modal = M.Modal.getInstance(document.getElementById('view-modal'));
+    document.getElementById('saveview-form').reset();
+    cargarNotas(id);
+    document.getElementById('id_ticketnota').value = id;
+    modal.open();
+};
+
+function cargarNotas(id) {
+    const form = new FormData();
+    form.append('id_ticketnota', id);
+    fetch(API_NOTAS + 'index', {
+        method: 'POST',
+        body: form
+    })
+    .then(res => res.json())
+    .then(json => {
+        console.log(json);
+
+        if (json.status) {
+            if (json.dataset && json.dataset.length > 0) {
+                llenarTablanotas(json.dataset);
+            } else {
+                Swal.fire("Sin datos", "No se encontraron notas asignadas al ticket", "info");
+            }
+        } else {
+            Swal.fire("Error", json.exception, "error");
+        }
+    })
+    .catch(() => Swal.fire("Error", "No se pudo cargar la tabla", "error"));
+}
+
+
+function llenarTablanotas(dataset) {
+    let content = '';
+
+    dataset.forEach(row => {
+            content += `
+            <tr>
+                <td>${row.ticket_number}</td>
+                <td>${row.action}</td>
+                <td>${row.actor_name}</td>
+                <td>${row.created_at}</td>
+                <td>${row.note_type}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('tbody1-rows').innerHTML = content;
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'));
+}
 
 // ===============================
 // ACTUALIZAR
@@ -224,8 +318,8 @@ window.openUpdateDialog = function (id) {
             }
 
             // Reinicializar selects de Materialize para que tomen el valor
-            const selects = document.querySelectorAll('select');
-            M.FormSelect.init(selects);
+            const grupo = document.querySelectorAll('#save-modal select');
+            M.FormSelect.init(grupo);
         }, 50);
 
         M.updateTextFields();
@@ -295,6 +389,43 @@ document.getElementById('save-form').addEventListener('submit', e => {
     })
     .catch(() => Swal.fire("Error", "No se pudo guardar el TICKET", "error"));
 });
+
+
+document.getElementById('saveview-form').addEventListener('submit', e => {
+    e.preventDefault();
+
+    const form = new FormData(e.target);
+    fetch(API_NOTAS + 'create', {
+        method: 'POST',
+        body: form
+    })
+    .then(res => res.json())
+    .then(json => {
+        console.log(json);
+
+        if (!json.status) {
+            let errorMessage = 
+                json.exception ||
+                json.error_db ||
+                JSON.stringify(json.errors) ||
+                json.message ||
+                "Ocurrió un error desconocido";
+
+            Swal.fire("Error", errorMessage, "error");
+            return;
+        }
+
+        Swal.fire("Éxito", json.message, "success");
+        M.Modal.getInstance(document.getElementById('save-modal')).close();
+        let iddelticket = document.getElementById('id_ticketnota').value;
+        document.getElementById("descnote").value = "";
+        cargarTickets();
+        cargarNotas(iddelticket);
+        
+    })
+    .catch(() => Swal.fire("Error", "No se pudo guardar la nota", "error"));
+});
+
 
 
 
